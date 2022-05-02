@@ -1,0 +1,38 @@
+package rules
+
+import cloud.deuterium.drool.model.Order;
+import cloud.deuterium.drool.model.CustomerType;
+
+global java.util.ArrayList items;
+global cloud.deuterium.drool.model.Discount discount;
+
+dialect "mvel"
+
+rule "Item based discount"
+    when
+        // Order(items.contains(item))
+        Order(item memberOf items)
+    then
+        discount.setDiscount(discount.getDiscount() + 5);
+end
+
+rule "Customer type based discount - Loyal customer"
+    when
+        Order(customerType.equals(CustomerType.LOYAL))
+    then
+        discount.setDiscount(discount.getDiscount() + 10);
+end;
+
+rule "Customer type based discount - others"
+    when
+         Order(!customerType.equals(CustomerType.LOYAL))
+    then
+        discount.setDiscount(5);
+end;
+
+rule "Amount based discount"
+    when
+         Order(quantity > 100)
+    then
+        discount.setDiscount(discount.getDiscount() + 10);
+end

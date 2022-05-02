@@ -1,0 +1,35 @@
+package rules
+
+import cloud.deuterium.drool.model.Order;
+import cloud.deuterium.drool.model.CustomerType;
+global cloud.deuterium.drool.model.Discount discount;
+
+dialect "mvel"
+
+rule "Calculate Discount for LOYAL"
+    when
+        Order(quantity > 10 && customerType.equals(CustomerType.LOYAL))
+    then
+        discount.setDiscount(20);
+end
+
+rule "Calculate Discount for NEW"
+    when
+        Order(quantity > 20 && customerType.equals(CustomerType.NEW))
+    then
+        discount.setDiscount(10);
+end;
+
+rule "Calculate Discount for DISSATISFIED"
+    when
+        Order(quantity > 30 && customerType.equals(CustomerType.DISSATISFIED))
+    then
+        discount.setDiscount(5);
+end;
+
+rule "Amount based discount cumulative"
+    when
+         Order(quantity > 100)
+    then
+        discount.setDiscount(discount.getDiscount() + 30);
+end
